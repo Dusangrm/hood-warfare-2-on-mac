@@ -1,0 +1,14 @@
+.DS_Store
+*.log
+*.zip
+*.tar.*
+*.exe
+*.dylib
+*.dll
+*.app/
+downloads/
+dist/
+Logs/
+prefix/
+userdata/
+*.hood-backup

@@ -1,0 +1,59 @@
+# Troubleshooting
+
+## Finish Setup says the game is missing
+
+In the included Windows Steam client, sign in to the account that owns Hood Warfare 2 and finish its download. The Steam app ID is `5155360`. Finish Setup waits for both the installed-game manifest and the game executable. Keep the game in this client's default Steam library.
+
+Run `Finish Setup.command` again when the download is complete. It closes this setup's Windows Steam client before saving the game's launch option, and backs up the configuration first.
+
+## Switching Steam accounts
+
+Open `Open Windows Steam.command` and sign in to the other account privately. That account must own the game. Run `Finish Setup.command` again to save the required launch option for the newly signed-in account.
+
+## Download checksum mismatch
+
+Installation stops when a download does not match its pinned SHA-256. Get the [latest project release](https://github.com/SPACEMATES-STUDIO/hood-warfare-2-on-mac/releases/latest), then retry. If the message identifies a corrupt cached file, remove only that named file from `~/Library/Caches/hood-warfare-2-on-mac` and retry. A persistent mismatch needs a reviewed update to the project's download pin; do not bypass the check.
+
+## Microsoft Visual C++ prerequisite dialog
+
+Run `Finish Setup.command`, then open `Hood Warfare 2.app`. On the tested build, the Unreal Engine bootstrap incorrectly reported a missing runtime even with Microsoft Visual C++ x64 14.51.36247 installed.
+
+The configured Steam launch option is:
+
+```text
+C:\windows\system32\cmd.exe /d /c C:\HoodWarfare2-launch.cmd %command%
+```
+
+This starts the original game executable through Steam and skips only that faulty prerequisite bootstrap. No game files are patched. An older redistributable reporting that a newer version is installed is not a reason to downgrade.
+
+## Steam is black or does not open
+
+Use `Open Windows Steam.command` from this installation and allow the first Steam update to finish. This setup supplies the Wine engine's matching libraries and DXMT/D3DMetal configuration. Copying only the Wine executable or using a different Wine installation can fail before a window appears.
+
+The tested setup uses Steam's default rendering options. Do not add old Chromium GPU-disabling flags as a first troubleshooting step.
+
+## Controller letters or positions seem reversed
+
+Open `Controller Layout.command` and choose your preference:
+
+- Positions: Xbox/PlayStation-style muscle memory; the bottom face button acts as the primary confirm button.
+- Nintendo letters: physical X at the top reports X, A on the right reports A, B at the bottom reports B, and Y on the left reports Y.
+- Keyboard and mouse: no controller setup is needed.
+
+Restart the game environment as the command instructs. Use `Test Controller.command` and press physical buttons to check their reported values. The Windows tester keeps an Xbox-shaped illustration even when the mapping follows Nintendo letters.
+
+The Switch Pro controller was detected through Wine as an XInput controller. Physical-button and in-game controller verification remain pending; detection alone does not confirm every binding. Steam Input was left at its default setting during the original setup.
+
+## Multiplayer stops working after an update
+
+Use Windows Steam to update the game and verify its installed files. Check the game's current server status and release notes. Public multiplayer was tested on build `25888787`; future updates can change compatibility. This project provides no anti-cheat bypass.
+
+## Uninstalling
+
+Quit the game and its Windows Steam client, then remove `~/Applications/Hood Warfare 2 on Mac` (or the custom destination you selected). This also removes the downloaded game, this installation's Wine prefix, and its local saves; copy any saves you want to keep first.
+
+You can also remove this installer's download cache at `~/Library/Caches/hood-warfare-2-on-mac`, or the custom cache selected at installation, to reclaim that space.
+
+## Reporting a problem
+
+Include your Mac chip, macOS version, game build, the command you opened, and the exact error. Review any log excerpt before posting it publicly. Do not upload the Wine prefix, Steam account configuration, or sign-in data.
