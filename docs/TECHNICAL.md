@@ -82,6 +82,6 @@ The installer adds no login item or background relaunch service. Steam may recre
 
 ## Controller preference
 
-Wine's SDL controller path exposes the Switch Pro device through XInput. The bundled SDL2 compatibility library uses SDL3. `SDL_GAMECONTROLLER_USE_BUTTON_LABELS=1` requests Nintendo letters; `0` requests positional face-button mapping. The preference is scoped to this installation.
+Controller setup uses Wine's generic SDL/XInput path, with no device-specific allowlist or hard-coded hardware ID. Standard positions are the default for a fresh install; the saved choice is a button-mapping preference, not a controller-brand selector. The bundled SDL2 compatibility library uses SDL3. `SDL_GAMECONTROLLER_USE_BUTTON_LABELS=1` requests printed button letters on supported devices; `0` requests positional face-button mapping. The preference is scoped to this installation.
 
-The tester uses Wine's `control.exe joy.cpl`. Its diagram does not redraw to match Nintendo lettering; verify reported button presses instead. [SDL's button-label documentation](https://wiki.libsdl.org/SDL2/SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS) describes the distinction.
+The tester uses Wine's `control.exe joy.cpl`. Its diagram does not redraw to match the controller or selected layout; verify reported button presses instead. [SDL's button-label documentation](https://wiki.libsdl.org/SDL2/SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS) describes the distinction. Device detection and gameplay need hardware testing; the implementation does not establish compatibility with every controller model.

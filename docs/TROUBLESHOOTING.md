@@ -44,11 +44,13 @@ If your installation lacks the Quit shortcut, download the latest release and re
 
 Open `Controller Layout.command` and choose your preference:
 
-- Positions: Xbox/PlayStation-style muscle memory; the bottom face button acts as the primary confirm button.
-- Nintendo letters: physical X at the top reports X, A on the right reports A, B at the bottom reports B, and Y on the left reports Y.
+- Standard button positions: start here for Xbox, PlayStation, and other supported gamepads; the bottom face button acts as the primary confirm button.
+- Match printed button letters: follow the controller's printed A/B/X/Y labels where supported.
 - Keyboard and mouse: no controller setup is needed.
 
-Restart the game environment as the command instructs. Use `Test Controller.command` and press physical buttons to check their reported values. The Windows tester keeps an Xbox-shaped illustration even when the mapping follows Nintendo letters.
+Restart the game environment as the command instructs. Use `Test Controller.command` and press physical buttons to check their reported values. The Windows tester keeps an Xbox-shaped illustration regardless of your controller's shape or selected layout.
+
+There is no controller-brand restriction in the installer. Detection depends on your controller, connection, macOS, and Wine. Connect the controller before launching Steam and check it with `Test Controller.command`; changing the layout cannot make an undetected device appear. Individual models have not all been tested.
 
 The Switch Pro controller was detected through Wine as an XInput controller. Physical-button and in-game controller verification remain pending; detection alone does not confirm every binding. Steam Input was left at its default setting during the original setup.
 

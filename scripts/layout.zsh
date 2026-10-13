@@ -6,14 +6,14 @@ hood_owned
 layout="${1:-}"
 if [[ -z "$layout" ]]; then
   choice=$(/usr/bin/osascript <<'APPLESCRIPT'
-set answer to choose from list {"Standard positions (Xbox / PlayStation / most controllers)", "Nintendo letters (X top, A right, B bottom, Y left)", "Keyboard and mouse"} with title "Hood Warfare 2 — Controls" with prompt "Choose how the game should read your buttons." default items {"Standard positions (Xbox / PlayStation / most controllers)"} OK button name "Save"
+set answer to choose from list {"Standard button positions (recommended)", "Match printed button letters (A/B/X/Y)", "Keyboard and mouse"} with title "Hood Warfare 2 — Controls" with prompt "Choose how the game should read your buttons." default items {"Standard button positions (recommended)"} OK button name "Save"
 if answer is false then return "cancel"
 return item 1 of answer
 APPLESCRIPT
   )
   case "$choice" in
     Standard*) layout=positions ;;
-    Nintendo*) layout=labels ;;
+    Match*) layout=labels ;;
     Keyboard*) layout=keyboard ;;
     *) exit 0 ;;
   esac
