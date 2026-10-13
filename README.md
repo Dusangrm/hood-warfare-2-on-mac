@@ -17,6 +17,8 @@ Public multiplayer, movement, and firing worked on M4 Pro/macOS 27.0.1 with game
 
 Use `Controller Layout.command` to change button preference, `Test Controller.command` to check input, or `Open Windows Steam.command` to manage Steam.
 
+When done, close the game, then open `Quit Windows Steam.command`. Closing a Steam window alone can leave Steam running.
+
 [Troubleshooting](docs/TROUBLESHOOTING.md) · [Technical details](docs/TECHNICAL.md) · [Third-party software](THIRD-PARTY.md)
 
 Project scripts are MIT licensed. Downloaded components retain their own licenses.

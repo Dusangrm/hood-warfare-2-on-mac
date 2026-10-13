@@ -28,4 +28,8 @@ done
 hood_plist 'Program Flags' string '-applaunch 5155360 -windowed -ResX=1280 -ResY=720'
 print -- '1' > "$HOOD_ROOT/.setup-complete"
 print -- 'Ready. Next time, open Hood Warfare 2.app or Play Hood Warfare 2.command.'
+print -- 'When finished playing, close the game, then open Quit Windows Steam.command.'
+# Setup is complete. The native launcher can stay alive for the whole session;
+# release the setup lock now so the Quit shortcut can close that session.
+hood_cleanup
 hood_native >>"$HOOD_LOGS/launcher.log" 2>&1

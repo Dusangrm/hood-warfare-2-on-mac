@@ -32,6 +32,14 @@ Use `Open Windows Steam.command` from this installation and allow the first Stea
 
 The tested setup uses Steam's default rendering options. Do not add old Chromium GPU-disabling flags as a first troubleshooting step.
 
+## Steam or Wine keeps reopening
+
+Close Hood Warfare 2, then open `Quit Windows Steam.command` in the installation folder. You can also choose **Steam → Exit inside the Windows Steam window**. Closing or quitting a Wine window can leave Steam's main process running; Steam can restart its window helper.
+
+The Quit shortcut requests a normal Steam shutdown, waits for Steam to exit, then stops only this installation's remaining Wine helpers. It refuses to stop a running game. It does not open Steam when the session is already stopped, and it leaves macOS Steam and other Wine installations alone. If setup is still waiting for a download, cancel that Terminal window with Control-C before using Quit.
+
+If your installation lacks the Quit shortcut, download the latest release and rerun `Install.command` with the same destination. This preserves the downloaded game and Steam account. To update without launching the game afterward, run `./Install.command --no-open` from the unzipped release folder in Terminal (add `--destination '/your/install/folder'` for a custom destination).
+
 ## Controller letters or positions seem reversed
 
 Open `Controller Layout.command` and choose your preference:

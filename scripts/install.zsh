@@ -101,7 +101,7 @@ hood_plist WINEDEBUG string '-all'
 hood_plist 'Program Name and Path' string '/Program Files (x86)/Steam/Steam.exe'
 if [[ ! -f "$HOOD_ROOT/.setup-complete" ]]; then hood_plist 'Program Flags' string 'steam://install/5155360'; fi
 
-for tool in common.zsh layout.zsh play.zsh steam.zsh controller-test.zsh finish.zsh steam-options.pl; do
+for tool in common.zsh layout.zsh play.zsh steam.zsh quit.zsh controller-test.zsh finish.zsh steam-options.pl; do
   cp "$script_dir/$tool" "$HOOD_TOOLS/$tool"
 done
 make_shortcut() {
@@ -115,6 +115,7 @@ make_shortcut() {
 }
 make_shortcut 'Play Hood Warfare 2' play.zsh
 make_shortcut 'Open Windows Steam' steam.zsh
+make_shortcut 'Quit Windows Steam' quit.zsh
 make_shortcut 'Controller Layout' layout.zsh
 make_shortcut 'Test Controller' controller-test.zsh
 make_shortcut 'Finish Setup' finish.zsh

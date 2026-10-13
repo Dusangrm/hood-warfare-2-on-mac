@@ -6,7 +6,7 @@ The original setup ran Steam app `5155360`, public game build `25888787`, on an 
 
 A subsequent restart through the saved launcher and Steam launch option reached the menu without the prerequisite dialog, listed public servers, and joined another populated match.
 
-The portable installer's 78 VDF configuration checks and 9 lifecycle checks passed. A separate clean destination was assembled from the pinned archives, initialized with a fresh Wine prefix, and successfully installed Microsoft Visual C++ and Windows Steam. The native Steam-only launcher reached a visually verified, fully rendered sign-in screen with username/password fields and a QR code. No account was signed in during that test, and the existing working game setup was left untouched.
+The portable installer's VDF configuration and lifecycle checks passed. A separate clean destination was assembled from the pinned archives, initialized with a fresh Wine prefix, and successfully installed Microsoft Visual C++ and Windows Steam. The native Steam-only launcher reached a visually verified, fully rendered sign-in screen with username/password fields and a QR code. No account was signed in during that test, and the existing working game setup was left untouched.
 
 Installer validation therefore covers setup through Steam sign-in. A fresh game download and multiplayer test in the new prefix were not repeated; the multiplayer evidence above comes from the original setup.
 
@@ -71,6 +71,14 @@ The generated batch file changes to Steam's installed game directory and runs:
 ```
 
 It waits normally and returns the executable's exit code. It ignores the appended original bootstrap command. Steam tracks the resulting processes under the game's app ID. The workaround addresses a false Visual C++ prerequisite check in `HW2.exe`; the original game and anti-cheat binaries remain unchanged.
+
+## Quitting
+
+`Quit Windows Steam.command` shares setup's operation lock and refuses to interrupt an active installation or running game. It requests `Steam.exe -shutdown`, waits for Steam to exit, and only then stops that prefix's Wine helpers. A timeout or invalid process listing fails without forcing Steam or the game to quit. Setup releases its lock before launching the finished game.
+
+Shutdown first checks `wineserver -k0` with this installation's explicit `WINEPREFIX`, and repeats that check before polling with `tasklist`. Signal 0 checks an existing server without starting one; when it reports a stopped session, no Wine command follows. The probe and listing are not atomic: Wine can exit between them, so a later `tasklist` could briefly restart Wine services. It does not open Steam, and the shutdown flow closes those helpers. See Wine 11's [option handling](https://github.com/wine-mirror/wine/blob/wine-11.0/server/main.c#L79-L84) and [server-lock probe](https://github.com/wine-mirror/wine/blob/wine-11.0/server/request.c#L718-L760).
+
+The installer adds no login item or background relaunch service. Steam may recreate its webhelper window while its main process remains alive, so closing a Wine window is not a reliable way to exit Steam.
 
 ## Controller preference
 

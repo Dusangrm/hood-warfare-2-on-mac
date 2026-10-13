@@ -17,7 +17,7 @@ hood_lock_acquire() {
     HOOD_LOCK_HELD=1
     return 0
   fi
-  mkdir "$lock" 2>/dev/null || { hood_fail 'Setup is already running. If a previous run crashed, remove .install-lock in the installation folder and retry.'; return 1; }
+  mkdir "$lock" 2>/dev/null || { hood_fail 'Setup or shutdown is already running. Let it finish, or cancel setup with Control-C. If a previous run crashed, remove .install-lock in the installation folder and retry.'; return 1; }
   HOOD_LOCK_HELD=1
   export HOOD_SETUP_LOCK_PID=$$
   print -r -- "$$" > "$lock/owner"
@@ -98,30 +98,72 @@ hood_steam_running() {
   listing="$(hood_process_listing)" || return 2
   print -r -- "$listing" | /usr/bin/grep -qi '^"steam[.]exe",'
 }
+hood_server_running() {
+  # Signal 0 checks this prefix's existing server without starting Wine. Keep
+  # -k0 together: bare -k terminates it. Wine 11 exits 1 if no server exists.
+  local output result=0
+  output="$("$WINESERVER" -k0 2>&1)" || result=$?
+  (( result != 0 )) || return 0
+  if (( result == 1 )) && [[ -z "$output" ]]; then return 1; fi
+  hood_fail "Cannot check this installation's Wine session: ${output:-exit $result}"
+  return 2
+}
 hood_stop_steam() {
-  print -- 'Restarting this installation of Windows Steam to save the launch fix…'
-  local i listing
+  local mode="${1:-finish}" retry i listing result
+  case "$mode" in
+    finish)
+      print -- 'Closing this installation of Windows Steam to save the launch fix…'
+      retry='run Finish Setup again' ;;
+    quit)
+      print -- 'Closing this installation of Windows Steam…'
+      retry='run Quit Windows Steam again' ;;
+    *) hood_fail 'Unknown shutdown operation.'; return 1 ;;
+  esac
+  if hood_server_running; then :; else
+    result=$?
+    (( result == 1 )) && return 0
+    return 1
+  fi
   listing="$(hood_process_listing)" || return 1
   if print -r -- "$listing" | /usr/bin/grep -qiE '^"HW2(-HoodWarfare2|[.]exe")'; then
-    hood_fail 'Close Hood Warfare 2, then run Finish Setup again.'; return 1
+    hood_fail "Close Hood Warfare 2, then $retry."; return 1
   fi
   if print -r -- "$listing" | /usr/bin/grep -qi '^"steam[.]exe",'; then
-    "$WINE" 'C:\Program Files (x86)\Steam\Steam.exe' -shutdown >>"$HOOD_LOGS/setup.log" 2>&1
+    "$WINE" 'C:\Program Files (x86)\Steam\Steam.exe' -shutdown >>"$HOOD_LOGS/setup.log" 2>&1 || {
+      hood_fail "Steam did not accept the shutdown request. Choose Steam > Exit, then $retry."
+      return 1
+    }
   fi
   for i in {1..45}; do
+    # Steam can take its server down on exit. Skip tasklist if the probe reports
+    # it stopped; the probe and process listing are not an atomic operation.
+    if hood_server_running; then :; else
+      result=$?
+      (( result == 1 )) && return 0
+      return 1
+    fi
     listing="$(hood_process_listing)" || return 1
     if ! print -r -- "$listing" | /usr/bin/grep -qi '^"steam[.]exe",'; then
       if print -r -- "$listing" | /usr/bin/grep -qiE '^"HW2(-HoodWarfare2|[.]exe")'; then
-        hood_fail 'Close Hood Warfare 2, then run Finish Setup again.'; return 1
+        hood_fail "Close Hood Warfare 2, then $retry."; return 1
       fi
       # Only this dedicated prefix, after Steam and the game have exited.
-      "$WINESERVER" -k
-      "$WINESERVER" -w
+      if "$WINESERVER" -k; then :; else
+        # It may have exited naturally between tasklist and the stop request.
+        if hood_server_running; then
+          hood_fail 'Could not stop this installation’s Wine helpers.'; return 1
+        else
+          result=$?
+          (( result == 1 )) && return 0
+          return 1
+        fi
+      fi
+      "$WINESERVER" -w || { hood_fail 'Could not verify this installation’s Wine shutdown.'; return 1; }
       return 0
     fi
     sleep 2
   done
-  hood_fail 'Steam is still running. Exit this Windows Steam client, then run Finish Setup again.'
+  hood_fail "Steam is still running. Choose Steam > Exit inside Windows Steam, then $retry."
 }
 hood_game_ready() {
   local manifest="$HOOD_STEAM/steamapps/appmanifest_5155360.acf"
